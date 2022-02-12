@@ -1,0 +1,58 @@
+:root {
+  --maincolor1: hsl(195, 100%, 50%);
+  --maincolor2: hsl(0, 0%, 83%);
+  --fontcolor: hsl(210, 15%, 15%);
+  --bgcolor: hsl(208, 100%, 97%);
+
+  --failed_pic: url("data:image/svg+xml,<svg fill='hsla(0, 0%, 100%, 1)' class='bi bi-emoji-dizzy-fill' width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'><path d='M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM4.146 5.146a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 1 1 .708.708l-.647.646.647.646a.5.5 0 1 1-.708.708L5.5 7.207l-.646.647a.5.5 0 1 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 0-.708zm5 0a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708.708l-.647.646.647.646a.5.5 0 0 1-.708.708l-.646-.647-.646.647a.5.5 0 1 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 0-.708zM8 13a2 2 0 1 1 0-4 2 2 0 0 1 0 4z'/></svg>");
+  
+  --fontbase: Helvetica, Arial, sans-serif;
+  
+  --fontsize_normal: clamp(1rem, 3vmin, 3vmin);
+  --fontsize_big: clamp(2rem, 15vmin, 15vmin);
+  --iconsize: clamp(1.4rem, 4.2vmin, 4.2vmin);
+  --iconradius: clamp(0.7rem, 2.1vmin, 2.1vmin);
+  --gap: clamp(0.5rem, 1.5vmin, 1.5vmin);
+  --section_gap: clamp(150px, 5vmin, 5vmin);
+  --least_width: 320px;
+  --least_height: 500px;
+  --max_width: 2000px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  margin-block: 0;
+  margin-inline: 0;
+  background: none;
+  border: none;
+  outline: none;
+}
+body, #root, #main_body {
+  width: max(var(--least_width), 100%);
+  min-height: var(--least_height);
+  scroll-behavior: smooth;
+  font-family: var(--fontbase);
+  font-size: var(--fontsize_normal);
+  color: var(--fontcolor);
+  text-align: left;
+  transition-duration: 2s;
+}
+body {
+  background: var(--bgcolor);
+}
+#main_body {
+  max-width: var(--max_width);
+}
+:not(i) {
+  line-height: 1.2;
+  letter-spacing: 0.05rem;
+  word-break: break-word;
+}
+h1, h2, h3, h4, h5, h6, p, a {
+  margin-block: var(--gap);
+  margin-inline: var(--gap);
+}
+h1 {
+  font-size: var(--fontsize_big);
+}

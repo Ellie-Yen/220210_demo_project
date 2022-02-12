@@ -1,0 +1,18 @@
+{
+  "title": "人口戶數與性別",
+  "select_title": "地區",
+  "charts": {
+    "bar": {
+      "label": {
+        "m": "男",
+        "f": "女"
+      },
+      "x_ticks": {
+        "household_ordinary": "共同生活戶",
+        "household_single": "獨立生活戶"
+      },
+      "interval": 100,
+      "y_tick_unit": "戶數"
+    }
+  }
+}

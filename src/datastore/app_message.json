@@ -1,0 +1,6 @@
+{
+  "fail": "錯誤",
+  "fetch_fail": "下載失敗",
+  "parse_fail": "資料錯誤",
+  "unknown_fail": "未知錯誤"
+}
