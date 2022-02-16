@@ -1,32 +1,80 @@
-import { useState, useEffect } from "react";
-import householdGenderDataFetcher from '../service/householdGenderDataFetcher';
-import { default as CITY_LIST } from '../datastore/household_gender/request_city_list.json';
-import { default as TW_YEAR_LIST } from '../datastore/household_gender/request_tw_yr_list.json';
+import { ChangeEventHandler } from 'react';
+import householdGenderDataController from '../service/householdGenderController';
+import MyBarChart from '../component/my_bar_chart';
 
 export default function HouseholdGenderSection(){
-  const [init, setInit] = useState<boolean>(false);
-  const [data, setData] = useState<HouseholdGenderOutPut>({
-    is_success: false,
-    reason: 'not init'
-  });
-  async function getInitData(){
-    const new_data = await householdGenderDataFetcher({
-      tw_yr: TW_YEAR_LIST[0],
-      city_list: CITY_LIST
-    });
-    setData(new_data);
-  }
-  useEffect(()=> {
-    if (! init) {
-      getInitData();
-      setInit(true);
-    }
-  }, [init]);
+  return (
+    <MyBarChart
+      data={[[1155, 50]]}
+      group_label_list={['a']}
+      subgroup_label_list={['1', '2']}
+      color_list={['rgba(255,150,0,1)', 'rgba(255,0,150,1)']}
+    />
+  );
+}
+/*
+const {
+    dist_list,
+    setDistIdx,
+    render_data
+  } = householdGenderDataController();
   
+  const selectDist: ChangeEventHandler<HTMLSelectElement> = (event) => {
+    setDistIdx(+event.target.value);
+  };
+
   return (
     <section id='household_gender_section'>
-      {`[ ${data.is_success} ]`}
-      {`${data.is_success=== false ? data.reason : '' }`}
+      <SelectSection
+        selectDist={selectDist}
+        dist_list={dist_list}
+      />
+      <ResultDisplaySection
+        data={render_data}
+      />
     </section>
+  );
+*/
+
+function EmptyStatusSection(){
+  return (
+    <div> empty </div>
+  );
+}
+
+interface SelectSectionProps {
+  selectDist: ChangeEventHandler<HTMLSelectElement>,
+  dist_list: Array<string>
+}
+function SelectSection(props: SelectSectionProps){
+  return (
+    <div>
+      <label htmlFor="dist_select">地區</label>
+      {props.dist_list.length === 0 ? 'loading...': ''}
+      <select name="dists" id="dist_select"
+        onChange={props.selectDist}
+      >
+        <option value="">--Please choose an option--</option>
+        {props.dist_list.map((dist, i)=>
+          <option
+            key={dist} 
+            value={i}
+          >
+            {dist}
+          </option>
+        )}
+      </select>
+    </div>
+  );
+}
+
+interface ResultDisplaySectionProps {
+  data: HouseholdGenderRenderData
+}
+function ResultDisplaySection(props: ResultDisplaySectionProps){
+  return (
+    <MyBarChart
+      {...props.data.bar_chart}
+    />
   );
 }

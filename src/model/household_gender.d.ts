@@ -88,35 +88,31 @@ interface SuccessHouseholdGenderAPIOutput extends SuccessOutput {
 }
 type HouseholdGenderAPIOutput = SuccessHouseholdGenderAPIOutput | FailedOutput;
 
-// data that can used for rendering directly
-interface HouseholdGenderBarChartData {
-  household_single: {
-    f: number,
-    m: number
-  },
-  household_ordinary: {
-    f: number,
-    m: number
-  }
+// data after assorted
+type HouseholdGenderAssortDataKey = string;
+interface HouseholdGenderDistDataMap {
+  [name: HouseholdGenderAssortDataKey]: Array<HouseholdGenderRecordItem>
 }
-interface HouseholdGenderRenderData {
-  bar_chart: HouseholdGenderBarChartData
+interface HouseholdGenderDistAssortData {
+  name_list: Array<HouseholdGenderAssortDataKey>,
+  data: HouseholdGenderDistDataMap
 }
-interface HouseholdGenderDistData {
-  name: string,
-  data: HouseholdGenderRenderData
+interface HouseholdGenderCityDataMap {
+  [name: HouseholdGenderAssortDataKey]: HouseholdGenderDistAssortData
 }
-interface HouseholdGenderCityData {
-  name: string,
-  dist_list: Array<HouseholdGenderDistData>
+interface HouseholdGenderCityAssortData {
+  name_list: Array<HouseholdGenderAssortDataKey>,
+  data: HouseholdGenderCityDataMap
 }
-type HouseholdGenderData = Array<HouseholdGenderCityData>;
-
 interface SuccessHouseholdGenderOutPut extends SuccessOutput {
-  result: HouseholdGenderData
+  result: HouseholdGenderCityAssortData
 }
-
 type HouseholdGenderOutPut = SuccessHouseholdGenderOutPut | FailedOutput;
+
+// data that can used for rendering directly
+interface HouseholdGenderRenderData {
+  bar_chart: BarChartInfo
+}
 
 interface HouseholdGenderRequestCityInfo {
   name: string,
