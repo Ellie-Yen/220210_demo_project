@@ -6,7 +6,8 @@ interface ChartInfo {
   data: ChartData,
   group_label_list: Array<string>,
   subgroup_label_list: Array<string>,
-  color_list: ChartColorList
+  color_list: ChartColorList,
+  unit: string
 }
 
 interface ChartPosBoundary {
@@ -18,3 +19,22 @@ interface ChartPosBoundary {
 
 interface BarChartInfo extends ChartInfo {
 }
+interface DrawChartSizeKwargs {
+  boundary: ChartPosBoundary,
+  text_size: number
+}
+
+type DrawChartKwargs = 
+  CanvasDrawActionKwargs &
+  ChartInfo & DrawChartSizeKwargs
+;
+
+type DrawChartLabelKwargs = 
+  CanvasDrawActionKwargs & 
+  DrawChartSizeKwargs & {
+    label_list: Array<string>,
+    label_select_list: Array<boolean>,
+    pos_list: Array<CanvasRectKwargs>,
+    color_list: Array<string>,
+  }
+;

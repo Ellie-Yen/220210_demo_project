@@ -1,0 +1,14 @@
+{
+  "UNIT_LABEL": "單位",
+  "MARGIN": 5,
+  "GAP": 3,
+  "TEXT_SIZE_RATIO": 0.05,
+
+  "LABEL_GROUP_W_RATIO": 0.25,
+  "AXIS_BAND_RATIO": 0.1,
+  
+  "TEXT_BASELINE": "middle",
+
+  "TEXT_COLOR": "hsl(210, 15%, 15%)",
+  "TICK_COLOR": "hsl(210, 15%, 80%)"
+}

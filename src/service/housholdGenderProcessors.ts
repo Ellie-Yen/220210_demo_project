@@ -163,8 +163,11 @@ function ToBarChartData(record_list: Array<HouseholdGenderRecordItem>): BarChart
   });
 
   return {
-    color_list: ['rgba(0,0,150,1)', 'rgba(150,0,0,1)'],
-    group_label_list, subgroup_label_list, data
+    data,
+    group_label_list, 
+    subgroup_label_list,
+    color_list: CONTENT.charts.bar.color_list,
+    unit: CONTENT.charts.bar.unit
   };
 }
 

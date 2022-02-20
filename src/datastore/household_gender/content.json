@@ -11,7 +11,8 @@
     "bar": {
       "group_label_list": ["共同生活戶", "獨立生活戶"],
       "subgroup_label_list": ["男", "女"],
-      "y_tick_unit": "戶"
+      "color_list": ["hsla(203deg, 93%, 75%, 0.75)", "hsla(351deg, 100%, 86%, 0.75)"],
+      "unit": "戶"
     }
   }
 }

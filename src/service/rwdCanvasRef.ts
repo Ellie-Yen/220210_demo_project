@@ -1,29 +1,30 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, RefObject } from 'react';
+import sizeController from './sizeController';
 import makeAnimationCreator from "../lib/makeAnimationCreator";
 
-const MIN_W = 320;
-const MIN_H = 500;
-
-interface RWDCanvasRefInitKwargs {
-  h_ratio: number,
-  w_ratio: number,
-  drawAction: CanvasElementAction
-}
-export default function rwdCanvasRef(kwargs: RWDCanvasRefInitKwargs){
+/**
+ * update canvas view when resizing.
+ * @param drawAction : CanvasElementAction, a function that draw canvas.
+ * @returns RefObject<HTMLCanvasElement>
+ */
+export default function rwdCanvasRef(drawAction: CanvasElementAction): RefObject<HTMLCanvasElement>{
   const canvasRef = useRef<HTMLCanvasElement>();
-  const {
-    h_ratio,
-    w_ratio,
-    drawAction
-  } = kwargs;
   const makeAction = makeAnimationCreator();
+  const {isSizeChanged} = sizeController();
 
-  const resizeAndDraw: CanvasElementAction = (element) => {
-    element.height = Math.max(window.innerHeight * h_ratio, MIN_H);
-    element.width = Math.max(window.innerWidth * w_ratio, MIN_W);
-    drawAction(element);
+  const resizeAndDraw:CanvasElementAction = (element) => {
+    // get current render size
+    // then set size of element if size is changed.
+    // (the result will have unexpect scale ratio without doing this,
+    // since canvas has a default size which is different to render one)
+    const {width, height} = element.getBoundingClientRect();
+    if (isSizeChanged(width, height)){
+      element.width = width;
+      element.height = height;
+      drawAction(element);
+    }
   }
-  const handleResize = () => {
+  const handleDraw = () => {
     if (!canvasRef.current){
       return;
     }
@@ -31,14 +32,14 @@ export default function rwdCanvasRef(kwargs: RWDCanvasRefInitKwargs){
   };
 
   window.addEventListener('resize', ()=> {
-    makeAction(handleResize);
+    makeAction(handleDraw);
   });
   useEffect(()=> {
     if (!canvasRef.current){
       return;
     }
-    makeAction(handleResize);
+    makeAction(handleDraw);
   });
-
   return canvasRef;
 }
+

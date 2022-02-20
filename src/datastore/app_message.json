@@ -1,4 +1,5 @@
 {
+  "loading": "載入中",
   "fail": "錯誤",
   "fetch_fail": "下載失敗",
   "parse_fail": "資料錯誤",

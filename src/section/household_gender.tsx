@@ -1,19 +1,15 @@
 import { ChangeEventHandler } from 'react';
+import rwdCanvasRef from '../service/rwdCanvasRef';
+import produceBarChart from '../service/produceBarChart'; 
 import householdGenderDataController from '../service/householdGenderController';
-import MyBarChart from '../component/my_bar_chart';
+import MyChart from '../component/my_chart';
+
+import { default as MSG_MAP } from '../datastore/app_message.json';
+import { default as CONTENT } from '../datastore/household_gender/content.json';
 
 export default function HouseholdGenderSection(){
-  return (
-    <MyBarChart
-      data={[[1155, 50]]}
-      group_label_list={['a']}
-      subgroup_label_list={['1', '2']}
-      color_list={['rgba(255,150,0,1)', 'rgba(255,0,150,1)']}
-    />
-  );
-}
-/*
-const {
+  const {
+    fetch_state,
     dist_list,
     setDistIdx,
     render_data
@@ -25,20 +21,43 @@ const {
 
   return (
     <section id='household_gender_section'>
-      <SelectSection
-        selectDist={selectDist}
-        dist_list={dist_list}
-      />
-      <ResultDisplaySection
-        data={render_data}
-      />
+      {fetch_state.is_success === true
+        ? 
+        <SuccessSection
+          dist_list={dist_list}
+          selectDist={selectDist}
+          render_data={render_data}
+        />
+        : 
+        <EmptySection reason={fetch_state.reason}/>
+      }
     </section>
   );
-*/
+}
 
-function EmptyStatusSection(){
+interface EmptySectionProps {
+  reason: string
+}
+function EmptySection(props: EmptySectionProps){
   return (
-    <div> empty </div>
+    <>
+      <h1>{props.reason}</h1>
+    </>
+  );
+}
+
+type SuccessSectionProps = SelectSectionProps & ResultDisplaySectionProps;
+function SuccessSection(props: SuccessSectionProps){
+  return (
+    <>
+      <SelectSection
+        selectDist={props.selectDist}
+        dist_list={props.dist_list}
+      />
+      <ResultDisplaySection
+        render_data={props.render_data}
+      />
+    </>
   );
 }
 
@@ -49,12 +68,11 @@ interface SelectSectionProps {
 function SelectSection(props: SelectSectionProps){
   return (
     <div>
-      <label htmlFor="dist_select">地區</label>
-      {props.dist_list.length === 0 ? 'loading...': ''}
+      <label htmlFor="dist_select">{CONTENT.select_title}</label>
       <select name="dists" id="dist_select"
         onChange={props.selectDist}
       >
-        <option value="">--Please choose an option--</option>
+        <option value=""></option>
         {props.dist_list.map((dist, i)=>
           <option
             key={dist} 
@@ -69,12 +87,13 @@ function SelectSection(props: SelectSectionProps){
 }
 
 interface ResultDisplaySectionProps {
-  data: HouseholdGenderRenderData
+  render_data: HouseholdGenderRenderData
 }
 function ResultDisplaySection(props: ResultDisplaySectionProps){
+  const canvasRef = rwdCanvasRef(produceBarChart(props.render_data.bar_chart));
   return (
-    <MyBarChart
-      {...props.data.bar_chart}
+    <MyChart
+      canvasRef={canvasRef}
     />
   );
 }

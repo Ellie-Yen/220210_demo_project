@@ -56,3 +56,16 @@ h1, h2, h3, h4, h5, h6, p, a {
 h1 {
   font-size: var(--fontsize_big);
 }
+.chart_container {
+  display: flex;
+  place-content: stretch;
+  place-items: stretch;
+  min-width: var(--least_width);
+  min-height: var(--least_height);
+  max-width: max(var(--least_width), 100vw);
+  max-height: max(var(--least_height), 100vh);
+}
+.chart_container > canvas {
+  width: 100%;
+  border: 1px solid;
+}

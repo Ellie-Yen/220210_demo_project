@@ -1,177 +1,292 @@
-const MARGIN = 25;
-const AXIS_BAND = 50;
-const AXIS_CENTER = 25;
-const LABEL_GROUP_W = 100;
-const TEXT_SIZE = 30;
-const TEXT_ALIGN = 'center';
-const TEXT_BASELINE = 'middle';
-const TICK_COLOR = 'rgba(0,0,0,1)';
-const ROTATE_DEG = (Math.PI / 180) * 90;
+import boundaryToRectParamList from './boundaryToRectParamList';
+import { default as constant } from '../datastore/app_chart_setting.json';
+const {
+  GAP,
+  TEXT_BASELINE,
+  TEXT_COLOR, TICK_COLOR,
+} = constant;
 
-interface ClearAllKwargs extends CanvasDrawActionKwargs{
-  w: number,
-  h: number
-}
-export function clearAll(kwargs: ClearAllKwargs){
+const ROTATE_DEG = (Math.PI / 180) * 90;
+const CIRCLE_ANG = Math.PI * 2;
+
+type PosList = {
+  pos_list: Array<number>
+};
+
+type ClearAllKwargs = CanvasDrawActionKwargs & CanvasSizeKwargs;
+export async function clearAll(kwargs: ClearAllKwargs){
   const {ctx, w, h} = kwargs;
   ctx.clearRect(0, 0, w, h);
 }
 
-interface ClearRangeKwargs extends CanvasDrawActionKwargs {
+type ClearRangeKwargs = CanvasDrawActionKwargs & {
   boundary: ChartPosBoundary
 }
-export function clearRange(kwargs: ClearRangeKwargs){
+export async function clearRange(kwargs: ClearRangeKwargs){
   const {ctx, boundary} = kwargs;
-  ctx.clearRect(
-    boundary.left,
-    boundary.right,
-    boundary.right - boundary.left, 
-    boundary.bottom - boundary.top, 
-  );
+  ctx.clearRect(...boundaryToRectParamList(boundary));
 }
 
-interface RectKwargs extends ClearAllKwargs {
-  x: number,
-  y: number,
-  rect_color: string
+interface FillKwargs {
+  color: string
 }
-export function drawRect(kwargs: RectKwargs){
+type FillRectKwargs = FillKwargs & ClearRangeKwargs;
+export async function fillRectByColor(kwargs: FillRectKwargs){
   const {
-    ctx, x, y, w, h, rect_color
+    ctx, boundary, color
   } = kwargs;
-  ctx.fillStyle = rect_color;
-  ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = color;
+  ctx.fillRect(...boundaryToRectParamList(boundary));
 }
 
-interface TextRectKwargs extends RectKwargs {
-  text: string
-  text_color: string
-}
-export function horizontalTextRect(kwargs: TextRectKwargs){
+type CircleKwargs = CanvasDrawActionKwargs & FillKwargs & CanvasPosKwargs & {
+  radius: number
+};
+export async function fillCircleByColor(kwargs: CircleKwargs){
   const {
-    ctx, x, y, w, h, rect_color, text_color, text
+    ctx, x, y, color, radius
   } = kwargs;
-  drawRect({ctx, x, y, w, h, rect_color});
-  ctx.fillStyle = text_color;
-  ctx.font = `${TEXT_SIZE}px serif`;
-  ctx.textBaseline = TEXT_BASELINE;
-  ctx.textAlign = TEXT_ALIGN;
-  ctx.fillText(
-    text,
-    x + h / 2,
-    y + w / 2,
-    w
-  );
-}
-export function verticalTextRect(kwargs: TextRectKwargs){
-  const {
-    ctx, x, y, w, h, rect_color, text_color, text
-  } = kwargs;
-  drawRect({ctx, x, y, w, h, rect_color});
   ctx.save();
+  ctx.beginPath();
+  ctx.fillStyle = color;
+  ctx.arc(x, y, radius, 0, CIRCLE_ANG);
+  ctx.fill();
+  ctx.closePath();
+}
+export async function strokeCircleByColor(kwargs: CircleKwargs){
+  const {
+    ctx, x, y, color, radius
+  } = kwargs;
+  const radical = radius * 2;
+  ctx.save();
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.arc(x, y, radius, 0, CIRCLE_ANG);
+  ctx.clip();
+  ctx.clearRect(x - radius, y - radius, radical, radical);
+  ctx.stroke();
+  ctx.closePath();
+  ctx.restore();
+}
 
-  ctx.fillStyle = text_color;
-  ctx.font = `${TEXT_SIZE}px serif`;
-  ctx.textBaseline = TEXT_BASELINE;
-  ctx.textAlign = TEXT_ALIGN;
+type TextKwargs = ClearRangeKwargs & TextInfo;
+export async function drawCenterText(kwargs: TextKwargs){
+  const {ctx, text, boundary, size} = kwargs;
+  const rect_param_list = boundaryToRectParamList(boundary);
+
+  // move x, y, to center
+  rect_param_list[0] += rect_param_list[2] / 2;
+  rect_param_list[1] += rect_param_list[3] / 2;
+  await initTextSetting({ctx, size, text_align: 'center'});
+  await drawTextHelper({ctx, text, rect_param_list, size});
+}
+export async function drawLeftText(kwargs: TextKwargs){
+  const {ctx, text, boundary, size} = kwargs;
+  const rect_param_list = boundaryToRectParamList(boundary);
+  // move y to center
+  rect_param_list[1] += rect_param_list[3] / 2;
+  await initTextSetting({ctx, size, text_align: 'left'});
+  await drawTextHelper({ctx, text, rect_param_list, size});
+}
+
+type TextRectKwargs = FillRectKwargs & TextInfo;
+export async function drawHorizontalTextRect(kwargs: TextRectKwargs){
+  const {
+    ctx, boundary, color, text, size
+  } = kwargs;
+  if (color){
+    await fillRectByColor({ctx, boundary, color});
+  }
+  await drawCenterText({ctx, text, boundary, size});
+}
+export async function drawVerticalTextRect(kwargs: TextRectKwargs){
+  const {
+    ctx, boundary, color, text, size
+  } = kwargs;
+  if (color){
+    await fillRectByColor({ctx, boundary, color});
+  }
+  ctx.save();
 
   // put text in center of the rect,
   // if the rect could accommodate text inside;
   // otherwise put it on top.
   ctx.rotate(ROTATE_DEG);
+
+  // init bc we want to know text width
+  await initTextSetting({ctx, size, text_align: 'center'});
   const text_w = ctx.measureText(text).width;
-  const text_y = 
-    text_w > h
-    ? y - text_w
-    : y + h / 2
+  const h = (boundary.bottom - boundary.top);
+  const [top, bottom] = text_w > h
+    ? [boundary.top - text_w, boundary.top]
+    : [boundary.top, boundary.bottom]
   ;
-  ctx.fillText(
-    text, 
-    text_y, 
-    -x - w / 2
-  );
+  await drawCenterText({
+    ctx, text, size,
+    boundary: {
+      top: -boundary.right,
+      left: top,
+      right: bottom,
+      bottom: -boundary.left
+    }
+  });
   ctx.restore();
   ctx.save();
 }
 
-interface DrawGridKwargs extends CanvasDrawActionKwargs {
-  pos_list: Array<number>,
-  boundary: ChartPosBoundary
+type DrawLabelTextKwargs = TextRectKwargs & {
+  is_selected: boolean
+};
+export async function drawLabelText(kwargs: DrawLabelTextKwargs){
+  let {
+    ctx, boundary, color, text, size, is_selected
+  } = kwargs;
+  const radius = size / 2;
+  let [x, y] = [
+    boundary.left + radius, 
+    (boundary.top + boundary.bottom) / 2
+  ];
+  if (is_selected){
+    await fillCircleByColor({ctx, x, y, color, radius});
+  }
+  else {
+    await strokeCircleByColor({ctx, x, y, color, radius});
+  }
+  await drawLeftText({
+    ctx, 
+    text,
+    size,
+    boundary: Object.assign({}, boundary, {
+      left: boundary.left + size + GAP
+    })
+  });
 }
-export function drawGridY(kwargs: DrawGridKwargs){
+
+type DrawGridKwargs = ClearRangeKwargs & PosList;
+export async function drawGridY(kwargs: DrawGridKwargs){
   const {ctx, pos_list, boundary} = kwargs;
-  const getGridPosStart: GetXYPosFunction = (grid_pos: number) => [
-    boundary.left + AXIS_BAND, grid_pos
-  ];
-  const getGridPosEnd: GetXYPosFunction = (grid_pos: number) => [
-    boundary.right, grid_pos
-  ];
-  drawGridHelper({
+  const getGridPosStart: GetPosFunc = (y_pos) => ({
+    x: boundary.left, 
+    y: y_pos
+  });
+  const getGridPosEnd: GetPosFunc = (y_pos) => ({
+    x: boundary.right, 
+    y: y_pos
+  });
+  await drawGridHelper({
     ctx, pos_list, getGridPosStart, getGridPosEnd
   });
 }
 
 interface DrawTickKwargs extends DrawGridKwargs {
-  label_list: Array<string>
+  label_list: Array<string>,
+  size: number
 }
-export function drawTickX(kwargs: DrawTickKwargs){
-  const {ctx, pos_list, label_list, boundary} = kwargs;
-  const getPos: GetXYPosFunction = (pos: number) => [
-    pos, boundary.top + AXIS_BAND
-  ];
-  drawTickHelper({
-    ctx, pos_list, label_list, getPos
-  });
+export async function drawTickX(kwargs: DrawTickKwargs){
+  const {boundary, pos_list} = kwargs;
+  const w = (pos_list.length > 1
+    ? pos_list[1] - pos_list[0]
+    : boundary.right - boundary.left
+  ) / 2;
+  const getBoundary: GetBoundaryFunc = (x_pos) => 
+    Object.assign({}, boundary, {
+      left: x_pos - w,
+      right: x_pos + w
+    }
+  );
+  await drawTickHelper(
+    Object.assign({}, kwargs, {getBoundary})
+  );
 }
-export function drawTickY(kwargs: DrawTickKwargs){
-  const {ctx, pos_list, label_list, boundary} = kwargs;
-  const getPos: GetXYPosFunction = (pos: number) => [
-    boundary.left + AXIS_BAND, pos
-  ];
-  drawTickHelper({
-    ctx, pos_list, label_list, getPos
-  });
+export async function drawTickY(kwargs: DrawTickKwargs){
+  const {boundary, pos_list} = kwargs;
+  const h = (pos_list.length > 1
+    ? pos_list[1] - pos_list[0]
+    : boundary.bottom - boundary.top
+  ) / 2;
+  const getBoundary: GetBoundaryFunc = (y_pos) => 
+    Object.assign({}, boundary, {
+      top: y_pos - h,
+      bottom: y_pos + h
+    }
+  );
+  await drawTickHelper(
+    Object.assign({}, kwargs, {getBoundary})
+  );
 }
 
-type GetXYPosFunction = (pos: number)=> [number, number];
 
-interface DrawGridHelperKwargs extends CanvasDrawActionKwargs {
-  pos_list: Array<number>,
-  getGridPosStart: GetXYPosFunction,
-  getGridPosEnd: GetXYPosFunction
-}
-function drawGridHelper(kwargs: DrawGridHelperKwargs){
+
+type GetPosFunc = (pos: number)=> CanvasPosKwargs;
+type DrawGridHelperKwargs = CanvasDrawActionKwargs & PosList &{
+  getGridPosStart: GetPosFunc,
+  getGridPosEnd: GetPosFunc
+};
+async function drawGridHelper(kwargs: DrawGridHelperKwargs){
   const {
     ctx, pos_list, 
     getGridPosStart, getGridPosEnd
   } = kwargs;
-  ctx.fillStyle = TICK_COLOR;
   ctx.strokeStyle = TICK_COLOR;
   pos_list.forEach((tick_pos)=> {
+    const start = getGridPosStart(tick_pos);
+    const end = getGridPosEnd(tick_pos);
     ctx.beginPath();
-    ctx.moveTo(...getGridPosStart(tick_pos));
-    ctx.lineTo(...getGridPosEnd(tick_pos));
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(end.x, end.y);
     ctx.stroke();
     ctx.closePath();
   });
 }
 
-interface DrawTickHelperKwargs extends CanvasDrawActionKwargs {
-  pos_list: Array<number>,
-  label_list: Array<string>,
-  getPos: GetXYPosFunction
-}
-function drawTickHelper(kwargs: DrawTickHelperKwargs){
+type GetBoundaryFunc = (pos: number)=> ChartPosBoundary;
+type DrawTickHelperKwargs = DrawTickKwargs & {
+  getBoundary: GetBoundaryFunc
+};
+async function drawTickHelper(kwargs: DrawTickHelperKwargs){
   const {
-    ctx, pos_list, label_list, getPos
+    ctx, pos_list, label_list, size, getBoundary
   } = kwargs;
-  ctx.font = `${TEXT_SIZE}px serif`;
-  ctx.textBaseline = TEXT_BASELINE;
-  ctx.textAlign = TEXT_ALIGN;
-  ctx.fillStyle = TICK_COLOR;
-  pos_list.forEach((pos, i)=> {
-    ctx.fillText(label_list[i], ...getPos(pos));
-  });
+  for (let i = 0; i < label_list.length; i++) {
+    await drawCenterText({
+      ctx,
+      size,
+      text: label_list[i],
+      boundary: getBoundary(pos_list[i])
+    });
+  }
 }
 
+type InitTextSettingKwargs = CanvasDrawActionKwargs & {
+  text_align: CanvasTextAlign,
+  size: number
+}
+async function initTextSetting(kwargs: InitTextSettingKwargs){
+  const {ctx, text_align, size} = kwargs;
+  ctx.textAlign = text_align;
+  ctx.textBaseline = (TEXT_BASELINE as CanvasTextBaseline);
+  ctx.fillStyle = TEXT_COLOR;
+  ctx.font = `${size}px sans-serif`;
+}
+interface TextInfo {
+  size: number,
+  text: string,
+}
+type TextHelperKwargs = CanvasDrawActionKwargs & TextInfo & {
+  rect_param_list: CanvasRectParamList
+};
+async function drawTextHelper(kwargs: TextHelperKwargs){
+  const {
+    ctx, text, rect_param_list
+  } = kwargs;
+  const [x, y, w, h] = rect_param_list;
+  let size = Math.min(h, kwargs.size);
+  const text_w = ctx.measureText(text).width;
+
+  // scale text size if needed
+  if (text_w > w){
+    ctx.font = `${size * (w / text_w)}px sans-serif`;
+  }
+  ctx.fillText(text, x, y, w);
+}
 
