@@ -7,7 +7,7 @@ import {
   failed,
   success
 } from '../lib/outputConstructors';
-import { default as MSG_MAP } from '../datastore/app_message.json';
+import { default as MSG_MAP } from '../datastore/message.json';
 import { default as CONTENT } from '../datastore/household_gender/content.json';
 import { default as ERROR_CODE } from '../datastore/household_gender/error_code.json';
 
@@ -38,13 +38,13 @@ export function assortHouseholdGenderData(kwargs: ProcessorKwargs): HouseholdGen
 }
 
 /**
- * translate into data for rendering components.
+ * translate into data for rendering chart components.
  * (so far we have that for bar chart only)
  * @param record_list : Array<HouseholdGenderRecordItem>, 
  * the smallest component of assorted raw data. 
- * @returns HouseholdGenderRenderData
+ * @returns HouseholdGenderChartData
  */
- export function getHouseholdGenderRenderData(record_list: Array<HouseholdGenderRecordItem>): HouseholdGenderRenderData{
+ export function getHouseholdGenderChartData(record_list: Array<HouseholdGenderRecordItem>): HouseholdGenderChartData{
   return {
     bar_chart: ToBarChartData(record_list)
   };
@@ -143,7 +143,7 @@ function getDistName(city_name: string, site_id: string){
 type Label = keyof typeof CONTENT.label_to_key;
 type RecordKey = keyof HouseholdGenderRecordItem;
 
-function ToBarChartData(record_list: Array<HouseholdGenderRecordItem>): BarChartInfo {
+function ToBarChartData(record_list: Array<HouseholdGenderRecordItem>): ChartInfo {
   const group_label_list = CONTENT.charts.bar.group_label_list;
   const subgroup_label_list = CONTENT.charts.bar.subgroup_label_list;
 

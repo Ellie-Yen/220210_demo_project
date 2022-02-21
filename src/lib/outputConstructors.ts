@@ -1,4 +1,4 @@
-import { default as MSG_MAP } from '../datastore/app_message.json';
+import { default as MSG_MAP } from '../datastore/message.json';
 
 /**
  * handle exception errors in [try - catch]

@@ -9,7 +9,7 @@ import {
 import getStartOfRangeList from './getStartOfRangeList';
 import getMidOfRangeList from './getMidOfRangeList';
 
-import { default as constant } from '../datastore/app_chart_setting.json';
+import { default as constant } from '../datastore/chart_setting.json';
 const {
   GAP, AXIS_BAND_RATIO, UNIT_LABEL
 } = constant;

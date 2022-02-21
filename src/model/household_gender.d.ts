@@ -109,15 +109,32 @@ interface SuccessHouseholdGenderOutPut extends SuccessOutput {
 }
 type HouseholdGenderOutPut = SuccessHouseholdGenderOutPut | FailedOutput;
 
-// data that can used for rendering directly
-interface HouseholdGenderRenderData {
-  bar_chart: BarChartInfo
-}
-
 interface HouseholdGenderRequestCityInfo {
   name: string,
   code: string,
   logo: string
 }
 
-type HouseholdGenderRequestCityList = Array<HouseholdGenderRequestCityInfo>
+type HouseholdGenderRequestCityList = Array<HouseholdGenderRequestCityInfo>;
+
+// data that can used for rendering charts
+interface HouseholdGenderChartData {
+  bar_chart: ChartInfo
+}
+
+// data for rendering all sections
+interface HouseholdGenderDisplay {
+  tw_year: string,
+  city_info: HouseholdGenderRequestCityInfo,
+  dist_name: string,
+  chart: HouseholdGenderChartData
+}
+interface HouseholdGenderRenderData {
+  state: HouseholdGenderOutPut,
+  select: {
+    dist: MySelectKwargs
+  },
+  display: HouseholdGenderDisplay
+}
+
+

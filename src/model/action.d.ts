@@ -1,3 +1,4 @@
+type ElementAction = (element: HTMLElement) => any;
 type CanvasElementAction = (element: HTMLCanvasElement) => any;
 interface CanvasDrawActionKwargs {
   ctx: CanvasRenderingContext2D

@@ -1,15 +1,16 @@
 :root {
   --maincolor1: hsl(195, 100%, 50%);
-  --maincolor2: hsl(0, 0%, 83%);
+  --maincolor2: hsl(175, 100%, 50%);
+  --maincolor3: hsl(0, 0%, 83%);
   --fontcolor: hsl(210, 15%, 15%);
   --bgcolor: hsl(208, 100%, 97%);
 
-  --failed_pic: url("data:image/svg+xml,<svg fill='hsla(0, 0%, 100%, 1)' class='bi bi-emoji-dizzy-fill' width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'><path d='M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM4.146 5.146a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 1 1 .708.708l-.647.646.647.646a.5.5 0 1 1-.708.708L5.5 7.207l-.646.647a.5.5 0 1 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 0-.708zm5 0a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708.708l-.647.646.647.646a.5.5 0 0 1-.708.708l-.646-.647-.646.647a.5.5 0 1 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 0-.708zM8 13a2 2 0 1 1 0-4 2 2 0 0 1 0 4z'/></svg>");
+  --empty_pic: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='hsla(0, 0%, 100%, 1)' class='bi bi-stars' viewBox='0 0 16 16'><path d='M7.657 6.247c.11-.33.576-.33.686 0l.645 1.937a2.89 2.89 0 0 0 1.829 1.828l1.936.645c.33.11.33.576 0 .686l-1.937.645a2.89 2.89 0 0 0-1.828 1.829l-.645 1.936a.361.361 0 0 1-.686 0l-.645-1.937a2.89 2.89 0 0 0-1.828-1.828l-1.937-.645a.361.361 0 0 1 0-.686l1.937-.645a2.89 2.89 0 0 0 1.828-1.828l.645-1.937zM3.794 1.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387A1.734 1.734 0 0 0 4.593 5.69l-.387 1.162a.217.217 0 0 1-.412 0L3.407 5.69A1.734 1.734 0 0 0 2.31 4.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387A1.734 1.734 0 0 0 3.407 2.31l.387-1.162zM10.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732L9.1 2.137a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L10.863.1z'/></svg>");
+  --failed_pic: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='hsla(0, 0%, 100%, 1)' class='bi bi-emoji-dizzy-fill' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'><path d='M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM4.146 5.146a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 1 1 .708.708l-.647.646.647.646a.5.5 0 1 1-.708.708L5.5 7.207l-.646.647a.5.5 0 1 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 0-.708zm5 0a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708.708l-.647.646.647.646a.5.5 0 0 1-.708.708l-.646-.647-.646.647a.5.5 0 1 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 0-.708zM8 13a2 2 0 1 1 0-4 2 2 0 0 1 0 4z'/></svg>");
   
   --fontbase: Helvetica, Arial, sans-serif;
   
   --fontsize_normal: clamp(1rem, 3vmin, 3vmin);
-  --fontsize_big: clamp(2rem, 15vmin, 15vmin);
   --iconsize: clamp(1.4rem, 4.2vmin, 4.2vmin);
   --iconradius: clamp(0.7rem, 2.1vmin, 2.1vmin);
   --gap: clamp(0.5rem, 1.5vmin, 1.5vmin);
@@ -17,6 +18,7 @@
   --least_width: 320px;
   --least_height: 500px;
   --max_width: 2000px;
+  --max_chart_height: 80vh;
 }
 
 * {
@@ -27,6 +29,7 @@
   background: none;
   border: none;
   outline: none;
+  box-sizing: border-box;
 }
 body, #root, #main_body {
   width: max(var(--least_width), 100%);
@@ -53,19 +56,93 @@ h1, h2, h3, h4, h5, h6, p, a {
   margin-block: var(--gap);
   margin-inline: var(--gap);
 }
-h1 {
-  font-size: var(--fontsize_big);
-}
-.chart_container {
-  display: flex;
+.section {
+  min-width: max(var(--least_width), 100%);
+  min-height: max(var(--least_height), 100vh);
+  gap: var(--gap);
+  padding: var(--gap);
   place-content: stretch;
   place-items: stretch;
-  min-width: var(--least_width);
-  min-height: var(--least_height);
-  max-width: max(var(--least_width), 100vw);
-  max-height: max(var(--least_height), 100vh);
 }
-.chart_container > canvas {
-  width: 100%;
+.section, .container, .chart_container, .space_holder {
+  display: flex;
+}
+.section, .container {
+  flex-wrap: wrap;
+  flex: 1 var(--least_width);
+}
+.container {
+  place-content: center;
+  place-items: center;
+}
+.info_display {
+  flex-basis: 20%;
+}
+.chart_display {
+  width: max(100%, var(--least_width));
+  height: var(--max_chart_height);
+  place-self: center;
+  place-items: start;
+  overflow-y: auto;
+  gap: var(--gap);
+}
+.chart_container {
+  width: inherit;
+  height: inherit;
   border: 1px solid;
+}
+.info_display > *, .chart_container > canvas {
+  width: 100%;
+}
+.city_logo {
+  width: min(100%, 300px);
+  object-fit: scale-down;
+}
+.c_0 {
+  animation: FadeInAnime 2s ease 1;
+  -moz-animation: FadeInAnime 2s ease 1;
+  -webkit-animation: FadeInAnime 2s ease 1;
+}
+.c_1 {
+  background: linear-gradient(var(--maincolor1), var(--maincolor2));
+  background-size: 400% 400%;
+  animation: LoadingAnime 3s ease infinite;
+  -moz-animation: LoadingAnime 3s ease infinite;
+  -webkit-animation: LoadingAnime 3s ease infinite;
+}
+.c_2 {
+  background: var(--empty_pic) no-repeat var(--maincolor3) center/ contain;
+}
+.c_3 {
+  background: var(--failed_pic) no-repeat var(--maincolor3) center/ contain;
+}
+
+@-webkit-keyframes FadeInAnime {
+  0%{filter: opacity(0);}
+  100%{filter: opacity(100);}
+}
+@-moz-keyframes FadeInAnime {
+  0%{filter: opacity(0);}
+  100%{filter: opacity(100);}
+}
+@keyframes FadeInAnime {
+  0%{filter: opacity(0);}
+  100%{filter: opacity(100);}
+}
+
+/*-- gradient anime code genterate by https://www.gradient-animator.com/ --*/
+@-webkit-keyframes LoadingAnime {
+  0%{background-position:28% 0%}
+  50%{background-position:73% 100%}
+  100%{background-position:28% 0%}
+}
+@-moz-keyframes LoadingAnime {
+  0%{background-position:28% 0%}
+  50%{background-position:73% 100%}
+  100%{background-position:28% 0%}
+}
+@keyframes LoadingAnime {
+  0%{background-position:28% 0%}
+  50%{background-position:73% 100%}
+  100%{background-position:28% 0%}
 }

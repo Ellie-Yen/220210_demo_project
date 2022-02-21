@@ -1,11 +1,10 @@
 import chartInfoController from "./chartInfoController";
 import drawBarChart from "../lib/drawBarChart";
 import drawLabelGroup from "../lib/drawLabelGroup";
-import {
-  clearAll
-} from '../lib/canvasDrawHelpers';
+import {clearAll} from '../lib/canvasDrawHelpers';
+import changeClsName from "../lib/elementClassNameModifiers";
 
-import { default as constant } from '../datastore/app_chart_setting.json';
+import { default as constant } from '../datastore/chart_setting.json';
 const {
   MARGIN, TEXT_COLOR, TEXT_SIZE_RATIO,
   LABEL_GROUP_W_RATIO
@@ -27,6 +26,7 @@ export default function produceBarChart(chart_info: ChartInfo): CanvasElementAct
 
   if (data.length === 0 || data[0].length === 0){
     return (element) => {
+      changeClsName.toEmtpy(element);
       const ctx = element.getContext('2d');
       const [w, h] = [element.width, element.height];
       clearAll({ctx, w, h});
@@ -43,11 +43,13 @@ export default function produceBarChart(chart_info: ChartInfo): CanvasElementAct
   );
 
   return (element) => {
+    changeClsName.toLoading(element);
+    
     // init static kwargs of draw action.
     const ctx = element.getContext('2d');
     const [w, h] = [element.width, element.height];
     const label_group_w = LABEL_GROUP_W_RATIO * w;
-    const text_size = w * TEXT_SIZE_RATIO;
+    const text_size = Math.min(w, h) * TEXT_SIZE_RATIO;
     const chart_boundary: ChartPosBoundary = {
       left: MARGIN,
       right: w - MARGIN - MARGIN - label_group_w,
@@ -80,7 +82,7 @@ export default function produceBarChart(chart_info: ChartInfo): CanvasElementAct
       group_label_list,
       subgroup_label_list,
       label_select_list: label_list.map(k => true)
-    }));
+    })).then(()=> {changeClsName.toSuccess(element)});
 
     // redraw by new info if view should be udated.
     element.onclick = (event) => {
@@ -95,9 +97,9 @@ export default function produceBarChart(chart_info: ChartInfo): CanvasElementAct
         group_label_list: change_view.new_data.group_label_list,
         subgroup_label_list: change_view.new_data.subgroup_label_list,
         label_select_list: change_view.label_select_list
-      }));
+      }))
     }
-  };
+  }
 }
 
 type DrawKwargs = DrawChartKwargs & DrawChartLabelKwargs & {

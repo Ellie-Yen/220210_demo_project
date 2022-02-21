@@ -1,6 +1,9 @@
 {
   "title": "人口戶數與性別",
-  "select_title": "地區",
+  "select_title": {
+    "tw_year": "年",
+    "dist": "地區"
+  },
   "label_to_key": {
     "共同生活戶": "household_ordinary",
     "獨立生活戶": "household_single",

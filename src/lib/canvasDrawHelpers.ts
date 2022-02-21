@@ -1,5 +1,5 @@
 import boundaryToRectParamList from './boundaryToRectParamList';
-import { default as constant } from '../datastore/app_chart_setting.json';
+import { default as constant } from '../datastore/chart_setting.json';
 const {
   GAP,
   TEXT_BASELINE,
@@ -118,7 +118,7 @@ export async function drawVerticalTextRect(kwargs: TextRectKwargs){
   const text_w = ctx.measureText(text).width;
   const h = (boundary.bottom - boundary.top);
   const [top, bottom] = text_w > h
-    ? [boundary.top - text_w, boundary.top]
+    ? [boundary.top - text_w, boundary.bottom]
     : [boundary.top, boundary.bottom]
   ;
   await drawCenterText({

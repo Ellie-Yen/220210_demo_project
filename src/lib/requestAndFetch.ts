@@ -3,7 +3,7 @@ import {
   failed,
   success
 } from './outputConstructors';
-import { default as MSG_MAP } from '../datastore/app_message.json';
+import { default as MSG_MAP } from '../datastore/message.json';
 
 /**
  * @param url: string, the url of api to request

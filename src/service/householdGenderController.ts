@@ -4,16 +4,16 @@ import {
 
 import {
   assortHouseholdGenderData,
-  getHouseholdGenderRenderData
+  getHouseholdGenderChartData
 } from './housholdGenderProcessors';
 
 import requestAndFetch from '../lib/requestAndFetch';
-import { default as MSG } from '../datastore/app_message.json';
+import { default as MSG } from '../datastore/message.json';
 import { default as API_MAP } from '../datastore/household_gender/api_info.json';
 import { default as CITY_LIST } from '../datastore/household_gender/request_city_list.json';
 import { default as TW_YEAR_LIST } from '../datastore/household_gender/request_tw_yr_list.json';
 
-const EMPTY_RENDER_DATA: HouseholdGenderRenderData = {
+const EMPTY_CHART_DATA: HouseholdGenderChartData = {
   bar_chart: {
     group_label_list: [],
     subgroup_label_list: [],
@@ -26,20 +26,18 @@ const EMPTY_RENDER_DATA: HouseholdGenderRenderData = {
 /**
  * helps fetch and update data for rendering. 
  * @returns an object contains following keys:
- * - fetch_state: HouseholdGenderOutPut,
- * - dist_list: Array<string>, dist names in current city.
- * - setDistIdx: React.Dispatch, function to select a dist.
- * - render_data: HouseholdGenderRenderData
+ * - state: HouseholdGenderOutPut,
+ * - select: MySelectKwargs for select dist
+ * - display: info/ data for rendering.
  */
-export default function householdGenderDataController(){
-  
-  // these are app default options
-  const tw_year_list = TW_YEAR_LIST;
-  const city_list = CITY_LIST;
-
+export default function householdGenderDataController(): HouseholdGenderRenderData{
   // these are selectable, but are fixed in current version.
   const city_idx = 0;
   const tw_year_idx = 0;
+
+  const tw_year = TW_YEAR_LIST[tw_year_idx];
+  const city_info = CITY_LIST[city_idx];
+
 
   // these are decided after above parameters are selected.
   const [fetch_state, setFetchState] = useState<HouseholdGenderOutPut>({
@@ -47,30 +45,29 @@ export default function householdGenderDataController(){
     reason: MSG.loading
   });
   const [dist_list, setDistList] = useState<Array<string>>([]);
-  const [dist_idx, setDistIdx] = useState<number>(-1);
+  const [dist_name, setDistName] = useState<string>('');
 
   // the final data for rendering result, 
   // update after select all parameters above
-  const [render_data, setRenderData] = useState<HouseholdGenderRenderData>(EMPTY_RENDER_DATA);
+  const [chart_data, setChartData] = useState<HouseholdGenderChartData>(EMPTY_CHART_DATA);
 
   async function fetchAndUpdate(kwargs: FetchKwargs){
     const new_fetch_state = await fetchAssortedData(kwargs);
-    setRenderData(EMPTY_RENDER_DATA);
-    setDistIdx(-1);
+    setChartData(EMPTY_CHART_DATA);
     setFetchState(new_fetch_state);
     if (new_fetch_state.is_success === true){
-      const city_name = new_fetch_state.result.name_list[city_idx];
-      setDistList(new_fetch_state.result.data[city_name].name_list);
+      setDistList(new_fetch_state.result.data[city_info.name].name_list);
       return;
     }
     setDistList([]);
   }
-  function updateRenderData(data_root: SuccessHouseholdGenderOutPut){
-    const city_name = data_root.result.name_list[city_idx];
-    const dist_name = data_root.result.data[city_name].name_list[dist_idx];
-    const dist_record_list = data_root.result.data[city_name].data[dist_name];
-    const new_render_data = getHouseholdGenderRenderData(dist_record_list);
-    setRenderData(new_render_data);
+  function selectDist(idx: number){
+    setDistName(dist_list[idx]);
+  }
+  function updateRenderData(success_state: SuccessHouseholdGenderOutPut){
+    const dist_record_list = success_state.result.data[city_info.name].data[dist_name];
+    const new_chart_data = getHouseholdGenderChartData(dist_record_list);
+    setChartData(new_chart_data);
   }
 
   // fetch data
@@ -79,22 +76,31 @@ export default function householdGenderDataController(){
       tw_year: TW_YEAR_LIST[tw_year_idx],
       city_list: CITY_LIST
     });
-  }, [tw_year_idx, CITY_LIST]);
+  }, [tw_year, CITY_LIST]);
 
   // update render data after dist is selected.
   useEffect(()=> {
-    if (dist_idx === -1 || !fetch_state.is_success){
+    if (dist_name === '' || !fetch_state.is_success){
       return;
     }
     updateRenderData(fetch_state);
-  }, [fetch_state, dist_idx]);
+  }, [fetch_state, dist_name]);
   
-  return {
-    fetch_state,
-    dist_list,
-    setDistIdx,
-    render_data
-  };
+  return ({
+    state: fetch_state,
+    select: {
+      dist: {
+        list: dist_list,
+        selectFunc: selectDist
+      }
+    },
+    display: {
+      tw_year,
+      city_info,
+      dist_name,
+      chart: chart_data
+    }
+  });
 }
 
 type APIYearKey = keyof typeof API_MAP.tw_year_url;

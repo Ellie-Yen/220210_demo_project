@@ -17,8 +17,6 @@ interface ChartPosBoundary {
   right: number
 }
 
-interface BarChartInfo extends ChartInfo {
-}
 interface DrawChartSizeKwargs {
   boundary: ChartPosBoundary,
   text_size: number
