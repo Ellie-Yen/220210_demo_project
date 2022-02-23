@@ -1,0 +1,64 @@
+:root {
+  --symbol: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='hsl(210, 15%, 15%)' class='bi bi-caret-down' viewBox='0 0 16 16'><path d='M3.204 5h9.592L8 10.481 3.204 5zm-.753.659 4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659z'/></svg>");
+}
+
+.my_select {margin: var(--gap) 0;}
+.my_select_option, 
+.my_option_list, 
+.my_option_container, 
+.selected_item::after {
+  transition-duration: 2s;
+}
+.my_select, .my_option_container {place-content: start;}
+.my_option_container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+.my_option_container.a_0 {
+  height: 0vh;
+  z-index: -1;
+  filter: opacity(0);
+}
+.my_option_container.a_1 {
+  height: 100vh;
+  padding: 10%;
+  z-index: 2;
+  background: var(--bgcolor);
+}
+.my_option_list {
+  height: 100%;
+  padding: 0 var(--gap);
+  width: fit-content;
+  overflow: hidden auto;
+}
+
+.my_select_option { 
+  display: flex;
+  place-content: space-around;
+  border-radius: var(--gap);
+  padding: var(--gap);
+ }
+.my_select_option:hover {
+  cursor: pointer;
+  background: var(--maincolor1);
+  box-shadow: 
+    var(--gap) var(--gap) calc(var(--gap) * 1.5) var(--maincolor2),
+    calc(var(--gap) * -1) calc(var(--gap) * -1) calc(var(--gap) * 1.5) var(--lightcolor);
+}
+.my_select_option.a_1 {
+  background: var(--maincolor2);
+}
+.selected_item { 
+  box-shadow: 
+    inset var(--gap) var(--gap) calc(var(--gap) * 1.5) var(--maincolor3),
+    inset calc(var(--gap) * -1) calc(var(--gap) * -1) calc(var(--gap) * 1.5) var(--lightcolor);
+ }
+.selected_item::after {
+  margin: 0 var(--gap);
+  content: var(--symbol);
+}
+.selected_item.a_1::after {
+  transform: rotate(180deg);
+}

@@ -38,36 +38,37 @@ export default function householdGenderDataController(): HouseholdGenderRenderDa
   const tw_year = TW_YEAR_LIST[tw_year_idx];
   const city_info = CITY_LIST[city_idx];
 
+  const default_display: HouseholdGenderDisplay = {
+    tw_year,
+    city_info,
+    dist_name: '',
+    chart: EMPTY_CHART_DATA
+  }
 
   // these are decided after above parameters are selected.
   const [fetch_state, setFetchState] = useState<HouseholdGenderOutPut>({
     is_success: false,
     reason: MSG.loading
   });
-  const [dist_list, setDistList] = useState<Array<string>>([]);
-  const [dist_name, setDistName] = useState<string>('');
 
   // the final data for rendering result, 
   // update after select all parameters above
-  const [chart_data, setChartData] = useState<HouseholdGenderChartData>(EMPTY_CHART_DATA);
-
+  const [display, setDisplay] = useState<HouseholdGenderDisplay>(default_display);
   async function fetchAndUpdate(kwargs: FetchKwargs){
     const new_fetch_state = await fetchAssortedData(kwargs);
-    setChartData(EMPTY_CHART_DATA);
+    setDisplay(default_display);
     setFetchState(new_fetch_state);
-    if (new_fetch_state.is_success === true){
-      setDistList(new_fetch_state.result.data[city_info.name].name_list);
-      return;
-    }
-    setDistList([]);
   }
   function selectDist(idx: number){
-    setDistName(dist_list[idx]);
-  }
-  function updateRenderData(success_state: SuccessHouseholdGenderOutPut){
-    const dist_record_list = success_state.result.data[city_info.name].data[dist_name];
+    const dist_name =  (fetch_state as SuccessHouseholdGenderOutPut
+      ).result.data[city_info.name].name_list[idx];
+    const dist_record_list = (fetch_state as SuccessHouseholdGenderOutPut
+      ).result.data[city_info.name].data[dist_name];
     const new_chart_data = getHouseholdGenderChartData(dist_record_list);
-    setChartData(new_chart_data);
+    setDisplay(Object.assign({}, default_display, {
+      chart: new_chart_data,
+      dist_name
+    }));
   }
 
   // fetch data
@@ -77,29 +78,18 @@ export default function householdGenderDataController(): HouseholdGenderRenderDa
       city_list: CITY_LIST
     });
   }, [tw_year, CITY_LIST]);
-
-  // update render data after dist is selected.
-  useEffect(()=> {
-    if (dist_name === '' || !fetch_state.is_success){
-      return;
-    }
-    updateRenderData(fetch_state);
-  }, [fetch_state, dist_name]);
   
   return ({
     state: fetch_state,
     select: {
       dist: {
-        list: dist_list,
+        list: fetch_state.is_success === true 
+        ? fetch_state.result.data[city_info.name].name_list
+        : [],
         selectFunc: selectDist
       }
     },
-    display: {
-      tw_year,
-      city_info,
-      dist_name,
-      chart: chart_data
-    }
+    display
   });
 }
 

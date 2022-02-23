@@ -1,12 +1,14 @@
-import { ChangeEventHandler } from 'react';
 import rwdCanvasRef from '../service/rwdCanvasRef';
 import produceBarChart from '../service/produceBarChart'; 
 import householdGenderDataController from '../service/householdGenderController';
 import MyChart from '../component/my_chart';
+import MySelect from '../component/my_select';
 
 import { default as MSG } from '../datastore/message.json';
 import { default as CLS_MAP } from '../datastore/class_name.json';
 import { default as CONTENT } from '../datastore/household_gender/content.json';
+
+import '../style/household_gender.css';
 
 export default function HouseholdGenderSection(){
   const {
@@ -14,10 +16,9 @@ export default function HouseholdGenderSection(){
     select,
     display
   } = householdGenderDataController();
-  console.log('re-render');
   return (
     <section id='household_gender_section'
-      className='section'
+      className='section row'
     >
       {state.is_success === true
         ? 
@@ -37,7 +38,7 @@ interface UnsuccessSectionProps {
 }
 function UnsuccessSection(props: UnsuccessSectionProps){
   return (
-    <header className={`container ${props.reason === MSG.loading 
+    <header className={`section row ${props.reason === MSG.loading 
       ? CLS_MAP.loading
       : CLS_MAP.fail
       }`}
@@ -47,65 +48,51 @@ function UnsuccessSection(props: UnsuccessSectionProps){
   );
 }
 
-type SuccessSectionProps = SelectSectionProps & InfoDisplaySectionProps;
+type SuccessSectionProps = SelectPartProps & InfoDisplaySectionProps;
 function SuccessSection(props: SuccessSectionProps){
   return (
     <>
       <header
-        className={`info_display container ${CLS_MAP.success}`}
+        className={`col info_display ${CLS_MAP.success}`}
       >
         <InfoDisplaySection
           display={props.display}
         />
-        <SelectSection
+        <SelectPart
           select={props.select}
         />
       </header>
-      <ChartDisplaySection
+      <ChartDisplayPart
         chart_data={props.display.chart}
       />
     </>
   );
 }
 
-interface SelectSectionProps {
+interface SelectPartProps {
   select: {
     dist: MySelectKwargs
   }
 }
-function SelectSection(props: SelectSectionProps){
-  const selectOption: ChangeEventHandler<HTMLSelectElement> = (event) => {
-    props.select.dist.selectFunc(+event.target.value);
-  }
+function SelectPart(props: SelectPartProps){
   return (
-    <div className='select'>
-      <label htmlFor="dist_select">
-        {CONTENT.select_title.dist}
-      </label>
-      <select name="dists" id="dist_select"
-        onChange={selectOption}
-      >
-        <option value=""></option>
-        {props.select.dist.list.map((dist, i)=>
-          <option
-            key={dist} 
-            value={i}
-          >
-            {dist}
-          </option>
-        )}
-      </select>
+    <div className='select_part'>
+      <MySelect
+        title={CONTENT.select_title.dist}
+        list={props.select.dist.list}
+        selectFunc={props.select.dist.selectFunc}
+      />
     </div>
   );
 }
 
-interface ChartDisplaySectionProps {
+interface ChartDisplayPartProps {
   chart_data: HouseholdGenderChartData
 }
-function ChartDisplaySection(props: ChartDisplaySectionProps){
+function ChartDisplayPart(props: ChartDisplayPartProps){
   const canvasRef = rwdCanvasRef(produceBarChart(props.chart_data.bar_chart));
   return (
-    <div className='chart_display container'>
+    <div className='chart_display'>
       <MyChart canvasRef={canvasRef}/>
     </div>
   );
@@ -118,7 +105,7 @@ function InfoDisplaySection(props: InfoDisplaySectionProps){
   return (
     <>
       <img
-        className='city_logo'
+        className='city_logo c_0'
         alt={props.display.city_info.name}
         src={`city_logo/${props.display.city_info.logo}.png`}
       />

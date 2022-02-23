@@ -1,3 +1,5 @@
+import '../style/my_chart.css';
+
 interface MyChartProps {
   canvasRef: React.RefObject<HTMLCanvasElement>
 }

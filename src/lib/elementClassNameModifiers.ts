@@ -3,27 +3,38 @@ const changeClsName = {
   toSuccess,
   toLoading,
   toEmtpy,
-  toFail
+  toFail,
+  toActive,
+  toInactive
 };
 
+const STATE_REGEXP = /c_\d+/;
 function toSuccess(element: HTMLElement){
-  modify(element, CLS_MAP.success);
+  modify(element, STATE_REGEXP, CLS_MAP.success);
 }
 function toLoading(element: HTMLElement){
-  modify(element, CLS_MAP.loading);
+  modify(element, STATE_REGEXP, CLS_MAP.loading);
 }
 function toEmtpy(element: HTMLElement){
-  modify(element, CLS_MAP.empty);
+  modify(element, STATE_REGEXP, CLS_MAP.empty);
 }
 function toFail(element: HTMLElement){
-  modify(element, CLS_MAP.fail);
+  modify(element, STATE_REGEXP, CLS_MAP.fail);
 }
 
-function modify(element: HTMLElement, new_cls_name: string){
-  if (! /c_\d+/.test(element.className)){
+const ACT_REGEXP = /a_\d+/;
+function toActive(element: HTMLElement){
+  modify(element, ACT_REGEXP, CLS_MAP.active);
+}
+function toInactive(element: HTMLElement){
+  modify(element, ACT_REGEXP, CLS_MAP.inactive);
+}
+
+function modify(element: HTMLElement, reg_ex: RegExp, new_cls_name: string){
+  if (! reg_ex.test(element.className)){
     element.className += ` ${new_cls_name}`;
     return;
   }
-  element.className = element.className.replace(/c_\d+/, new_cls_name);
+  element.className = element.className.replace(reg_ex, new_cls_name);
 }
 export default changeClsName;

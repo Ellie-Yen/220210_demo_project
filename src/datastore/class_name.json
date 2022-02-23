@@ -2,5 +2,8 @@
   "success": "c_0",
   "loading": "c_1",
   "empty": "c_2",
-  "fail": "c_3"
+  "fail": "c_3",
+  
+  "inactive": "a_0",
+  "active": "a_1"
 }

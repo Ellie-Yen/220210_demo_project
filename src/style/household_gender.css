@@ -1,0 +1,21 @@
+#household_gender_section > * {
+  padding: var(--gap);
+}
+.info_display { 
+  width: 25%;
+}
+.info_display > * {
+  width: 100%;
+}
+.chart_display {
+  display: flex;
+  flex-grow: 1;
+  width: max(50%, var(--least_width));
+  height: max(var(--least_height), var(--max_chart_height));
+  overflow-y: auto;
+  gap: var(--gap);
+}
+.city_logo {
+  width: min(50%, 300px);
+  object-fit: scale-down;
+}
