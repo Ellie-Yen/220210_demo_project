@@ -38,6 +38,7 @@
     "webpack-dev-server": "^4.7.4"
   },
   "dependencies": {
+    "express":"*",
     "serve": "^13.0.2"
   }
 }
