@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.tsx",
   "scripts": {
-    "start": "webpack-dev-server --mode development",
+    "dev": "webpack serve",
+    "start": "node server.js",
+    "build": "webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack --mode development --entry ./src/index.tsx --output-path ./dist",
-    "build": "webpack --mode production --entry ./src/index.tsx --output-path ./dist",
     "heroku-postbuild": "npm run build"
   },
   "keywords": [],
