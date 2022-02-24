@@ -51,6 +51,7 @@ module.exports = {
     port: 8000,
     https: true,
     allowedHosts: [
+      'ellie-demo-project-220224.herokuapp',
       'ellie-yen.github.io'
     ],
     historyApiFallback: true,
