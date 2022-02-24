@@ -10,6 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "heroku-postbuild": "npm run build"
   },
+  "proxy": "https://od.moi.gov.tw/",
   "keywords": [],
   "author": "",
   "license": "ISC",
