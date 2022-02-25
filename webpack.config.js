@@ -3,9 +3,11 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { WebpackPluginServe: Serve } = require('webpack-plugin-serve');
 
 // proxy setup steps:
 // https://webpack.js.org/configuration/dev-server/#devserverproxy
+// https://github.com/shellscape/webpack-plugin-serve/blob/master/recipes/proxies.md
 
 module.exports = {
   entry: './src/index.tsx',
@@ -29,6 +31,13 @@ module.exports = {
     ]
   },
   plugins: [
+    new Serve({
+      middleware: (app, builtins) => {
+        app.use(builtins.proxy('/api', {
+          target: 'https://od.moi.gov.tw/'
+        }))
+      }
+    }),
     new MiniCssExtractPlugin({
       filename: 'static/css/[name].[hash].css',
     }),

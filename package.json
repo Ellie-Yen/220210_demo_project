@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "express": "*",
-    "serve": "^13.0.2"
+    "serve": "^13.0.2",
+    "webpack-plugin-serve": "^1.6.0"
   }
 }
