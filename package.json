@@ -39,6 +39,7 @@
     "webpack-dev-server": "^4.7.4"
   },
   "dependencies": {
+    "http-proxy-middleware": "^2.0.3",
     "express": "*",
     "serve": "^13.0.2",
     "webpack-plugin-serve": "^1.6.0"
