@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname, 'dist')));
 app.set('port', process.env.PORT || 8080);
 
 // see if app connect to api
-app.get('/api', (req, res) => {
+app.get('*', (req, res) => {
   console.log(req, res);
   res.sendFile(path.resolve(__dirname, 'index.html'));
 });
