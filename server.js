@@ -4,7 +4,8 @@ const path = require('path');
 const app = express();
 
 const API_SERVICE_URL = 'https://od.moi.gov.tw/';
-onProxyRes: responseInterceptor(async (buffer, proxyRes, req, res) => {
+
+const onProxyRes = (async (buffer, proxyRes, req, res) => {
   // log original request and proxied request info
   const exchange = `[DEBUG] ${req.method} ${req.path} -> ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path} [${proxyRes.statusCode}]`;
   console.log(exchange);
