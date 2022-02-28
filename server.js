@@ -1,30 +1,13 @@
-const { createProxyMiddleware, responseInterceptor } = require('http-proxy-middleware');
 const express = require('express');
 const path = require('path');
+const apiRouter = require('./backend/router/api');
 const app = express();
 
+/*
+this only works locally bc restrictions in free cloud hosting service.
+
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const API_SERVICE_URL = 'https://od.moi.gov.tw/';
-
-const onProxyRes = (async (buffer, proxyRes, req, res) => {
-  console.log(buffer, proxyRes, req, res);
-  // log original request and proxied request info
-  const exchange = `[DEBUG] ${req.method} ${req.path} -> ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path} [${proxyRes.statusCode}]`;
-  console.log(exchange);
-
-  // log original response
-  console.log(`[DEBUG] original response:\n${buffer.toString('utf8')}`);
-
-  // set response content-type
-  res.setHeader('content-type', 'application/json; charset=utf-8');
-
-  // set response status code
-  res.statusCode = 200;
-
-  // return a complete different response
-  return JSON.stringify({
-    message: 'test'
-  });
-});
 
 app.use('/api', createProxyMiddleware({
   target: API_SERVICE_URL,
@@ -33,10 +16,11 @@ app.use('/api', createProxyMiddleware({
   headers: {
     connection: 'keep-alive'
   },
-  logLevel: 'debug',
-  onProxyRes
+  logLevel: 'debug'
 }));
+*/
 
+app.get('/api/**', apiRouter);
 app.use(express.static(path.join(__dirname, 'dist')));
 app.set('port', process.env.PORT || 8000);
 
